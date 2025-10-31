@@ -1,0 +1,58 @@
+# Nuxt dev/build outputs
+.output/
+.data/
+.nuxt/
+.nitro/
+.cache/
+.gemini/
+.tmp/
+dist/
+roadmap.md
+GEMINI.md
+
+# Node dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-error.log
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# OS and IDE specific files
+.DS_Store
+.fleet/
+.idea/
+.vscode/ # Visual Studio Code
+*.sublime-project
+*.sublime-workspace
+
+# Sensitive files (security critical)
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+
+# Database files
+*.sqlite
+*.db
+*.db-journal
+
+# Uploads
+uploads/
+
+# Test coverage
+coverage/
+
+# Backup/swap files
+*~
+*.bak
+*.swp
+.swo
