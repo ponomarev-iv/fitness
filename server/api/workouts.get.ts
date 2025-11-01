@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const date = query.date as string;
   const month = query.month as string; // Expects format YYYY-MM
-  const userId = event.context.user?.id;
+  const userId = event.context.auth?.user?.id;
 
   if (!userId) {
     return new Response(JSON.stringify({ message: 'Unauthorized' }), { status: 401 });

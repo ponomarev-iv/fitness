@@ -42,12 +42,19 @@
         <div>
           <button
             type="submit"
-            class="w-full px-4 py-2 font-bold text-white bg-primary rounded-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            class="w-full px-4 py-3 font-bold text-white bg-primary rounded-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
           >
             Зарегистрироваться
           </button>
         </div>
       </form>
+      <p class="text-center text-sm text-text-secondary">
+        Уже зарегистрированы?
+        <NuxtLink to="/login" class="text-primary hover:underline">Войти</NuxtLink>
+      </p>
+      <p class="text-center text-xs text-text-secondary opacity-75 mt-4">
+        Продолжая пользоваться приложением, вы соглашаетесь с использованием локального хранилища и файлов cookie для сохранения ваших данных.
+      </p>
     </div>
   </div>
 </template>

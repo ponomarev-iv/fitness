@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   const id = event.context.params?.id;
   const query = getQuery(event);
   const date = query.date as string;
-  const userId = event.context.user?.id;
+  const userId = event.context.auth?.user?.id;
 
   if (!id || !date || !userId) {
     throw createError({

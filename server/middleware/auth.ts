@@ -23,5 +23,5 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Unauthorized: Invalid token or user not found' });
   }
 
-  event.context.user = user;
+  event.context.auth = { user };
 });

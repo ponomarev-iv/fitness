@@ -9,7 +9,7 @@
     
     <div v-if="pending" class="text-center text-text-secondary">Загрузка...</div>
     
-    <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-64 overflow-y-auto">
+    <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto">
       <div 
         v-for="exercise in filteredExercises" 
         :key="exercise.id" 
@@ -17,7 +17,7 @@
         class="bg-card-alt p-2 rounded-lg text-center cursor-pointer border-2 border-transparent hover:border-primary relative group"
       >
         <img :src="exercise.image" :alt="exercise.name" class="w-full h-24 object-cover rounded-md mb-2">
-        <p class="text-sm font-medium">{{ exercise.name }}</p>
+        <p class="text-sm font-medium text-white">{{ exercise.name }}</p>
         <button @click.stop="deleteExercise(exercise.id)" class="absolute top-1 right-1 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 11-2 0v6a1 1 0 112 0V8z" clip-rule="evenodd" />

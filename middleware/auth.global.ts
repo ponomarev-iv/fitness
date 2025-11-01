@@ -7,8 +7,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   // If the route requires authentication and the user is not logged in
   if (requiresAuth && !authStore.isAuthenticated) {
-    // Redirect to the login page
-    return navigateTo('/login');
+    // Redirect to the register page
+    return navigateTo('/register');
   }
 
   // If the user is logged in and tries to access login or register pages

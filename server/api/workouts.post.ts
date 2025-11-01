@@ -3,7 +3,7 @@ import { readDb, writeDb } from '~/server/utils/db';
 
 export default defineEventHandler(async (event) => {
   const { date, exercises } = await readBody(event);
-  const userId = event.context.user?.id;
+  const userId = event.context.auth?.user?.id;
 
   if (!date || !exercises || !Array.isArray(exercises) || !userId) {
     return new Response(JSON.stringify({ message: 'Invalid request body' }), { status: 400 });

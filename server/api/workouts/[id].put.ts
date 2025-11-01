@@ -4,7 +4,7 @@ import { readDb, writeDb } from '~/server/utils/db';
 export default defineEventHandler(async (event) => {
   const id = event.context.params?.id;
   const { date, exercises } = await readBody(event);
-  const userId = event.context.user?.id;
+  const userId = event.context.auth?.user?.id;
 
   if (!id || !date || !exercises || !Array.isArray(exercises) || !userId) {
     throw createError({

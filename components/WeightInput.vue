@@ -6,7 +6,7 @@
         type="number" 
         :value="modelValue" 
         @input="onInput" 
-        class="w-16 text-center bg-transparent focus:outline-none"
+        class="w-16 text-center bg-transparent focus:outline-none text-white"
         placeholder="Вес"
       />
       <button @click.prevent="increment" class="px-3 py-2 text-lg text-primary">+</button>

@@ -23,7 +23,10 @@
 
       <!-- Empty State -->
       <div v-else-if="!workouts || workouts.length === 0" class="p-8 text-center bg-card rounded-lg">
-        <p class="text-text-secondary">Нет упражнений за этот день. Добавьте первое!</p>
+        <p class="text-text-secondary">Нет упражнений за этот день.</p>
+        <button @click="openAddModal" class="text-primary underline text-center mt-2 block mx-auto hover:text-primary-light transition-colors duration-200">
+          Добавьте первое!
+        </button>
       </div>
 
       <!-- Workout List -->

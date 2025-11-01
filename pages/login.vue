@@ -37,6 +37,9 @@
           </button>
         </div>
       </form>
+      <p class="text-center text-xs text-text-secondary opacity-75 mt-4">
+        Продолжая пользоваться приложением, вы соглашаетесь с использованием локального хранилища и файлов cookie для сохранения ваших данных.
+      </p>
     </div>
   </div>
 </template>
