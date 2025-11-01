@@ -5,7 +5,7 @@
       <p class="text-text-secondary">Просмотр и редактирование прошлых тренировок.</p>
     </div>
 
-    <div style="max-width: 400px; margin: 40px 24px 20px;">
+    <div style="max-width: 400px; margin: 40px 0 20px;">
       <Calendar 
         :initial-date="selectedDate" 
         :marked-dates="markedDates" 
