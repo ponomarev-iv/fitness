@@ -1,13 +1,13 @@
 <template>
   <div class="bg-card p-4 rounded-lg shadow-md">
     <div class="flex justify-between items-center mb-4">
-      <button @click="goToPreviousMonth" class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-800 shadow-md hover:bg-gray-100">
+      <button @click="goToPreviousMonth" class="w-8 h-8 flex items-center justify-center rounded-full bg-card-alt text-white shadow-md hover:bg-card-alt-light">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
       <h3 class="text-lg font-bold">{{ currentMonthName }} {{ currentYear }}</h3>
-      <button @click="goToNextMonth" class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-800 shadow-md hover:bg-gray-100" :style="{ visibility: nextMonthIsFuture ? 'hidden' : 'visible' }">
+      <button @click="goToNextMonth" class="w-8 h-8 flex items-center justify-center rounded-full bg-card-alt text-white shadow-md hover:bg-card-alt-light" :style="{ visibility: nextMonthIsFuture ? 'hidden' : 'visible' }">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
         </svg>

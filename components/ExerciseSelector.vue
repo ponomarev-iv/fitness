@@ -69,11 +69,20 @@
         </div>
       </div>
     </div>
+
+    <ConfirmationModal 
+      v-model="showConfirmationModal"
+      title="Удалить упражнение?"
+      message="Вы уверены, что хотите удалить это упражнение? Это действие нельзя будет отменить."
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, nextTick } from 'vue';
+import ConfirmationModal from './ConfirmationModal.vue';
+import { useAuthFetch } from '~/composables/useAuthFetch';
 
 const emit = defineEmits(['select']);
 
@@ -81,6 +90,8 @@ const searchTerm = ref('');
 const newExerciseName = ref('');
 const isAddingNewExercise = ref(false);
 const newExerciseInput = ref(null);
+const showConfirmationModal = ref(false);
+const exerciseToDelete = ref(null);
 
 // Fetch exercises
 const { data: exercises, pending, refresh: refreshExercises } = await useFetch('/api/exercises');
@@ -111,7 +122,7 @@ const cancelAddExercise = () => {
 
 const addExercise = async () => {
   if (!newExerciseName.value.trim()) return;
-  await useFetch('/api/exercises', {
+  await useAuthFetch('/api/exercises', {
     method: 'POST',
     body: { name: newExerciseName.value, hasWeight: true, defaultWeight: 0 },
   });
@@ -120,11 +131,16 @@ const addExercise = async () => {
   refreshExercises();
 };
 
-const deleteExercise = async (id) => {
-  if (!confirm('Вы уверены, что хотите удалить это упражнение?')) return;
-  await useFetch(`/api/exercises/${id}`, {
+const deleteExercise = (id) => {
+  exerciseToDelete.value = id;
+  showConfirmationModal.value = true;
+};
+
+const confirmDelete = async () => {
+  await useAuthFetch(`/api/exercises/${exerciseToDelete.value}`, {
     method: 'DELETE',
   });
   refreshExercises();
+  exerciseToDelete.value = null;
 };
 </script>

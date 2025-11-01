@@ -23,6 +23,19 @@
 
         <!-- Step 2: Add/Edit Sets -->
         <div v-else>
+          <Accordion v-if="exerciseHistory && exerciseHistory.length > 0" title="Прошлые результаты" class="mb-4 mx-[-0.75rem]">
+            <ul class="space-y-2">
+              <li v-for="(item, index) in exerciseHistory" :key="index" class="text-sm text-text-secondary flex justify-between items-center px-3">
+                <span class="font-bold text-white">{{ new Date(item.date).toLocaleDateString() }}:</span>
+                <div class="flex flex-nowrap overflow-x-auto custom-scrollbar">
+                  <span v-for="(set, i) in item.sets" :key="i" class="ml-2 px-2 py-1 bg-background rounded-md text-xs flex-shrink-0">
+                    {{ set.reps }}x{{ set.weight }}кг
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </Accordion>
+
           <form @submit.prevent="saveWorkout">
             <div class="space-y-4">
               <div v-if="sets.length > 0" class="flex items-center space-x-2 mb-2 text-text-secondary text-sm font-medium mx-[-10px]">
@@ -73,6 +86,7 @@
 <script setup>
 import { ref, watch, computed, defineAsyncComponent } from 'vue';
 const ExerciseSelector = defineAsyncComponent(() => import('./ExerciseSelector.vue'));
+import Accordion from './Accordion.vue';
 import { useAuthFetch } from '~/composables/useAuthFetch';
 import WeightInput from './WeightInput.vue';
 import { useAuthStore } from '~/stores/auth'; // Import useAuthStore
@@ -102,6 +116,22 @@ const { data: lastWorkoutData, refresh: refreshLastWorkout } = useLazyFetch(() =
   },
 });
 
+const exerciseHistory = ref(null);
+
+const { data: exerciseHistoryData, refresh: refreshExerciseHistory } = useLazyFetch(() => {
+  if (!selectedExercise.value?.id || isEditing.value) return null;
+  return `/api/exercises/${selectedExercise.value.id}/history`;
+}, {
+  immediate: false,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+  },
+  watch: [() => selectedExercise.value],
+  onResponse({ response }) {
+    exerciseHistory.value = response._data;
+  },
+});
+
 const liveTonnage = computed(() => {
   if (!selectedExercise.value || !selectedExercise.value.hasWeight) return 0;
   return sets.value.reduce((total, set) => {
@@ -113,6 +143,7 @@ const liveTonnage = computed(() => {
 
 const handleExerciseSelect = async (exercise) => {
   selectedExercise.value = exercise;
+  await refreshExerciseHistory();
 
   let initialWeight = exercise.hasWeight ? (exercise.defaultWeight || 0) : 0;
 
@@ -139,8 +170,6 @@ const addSet = () => {
       }
     } else if (sets.value.length > 0) { // Fallback to last set in current modal
       newWeight = sets.value[sets.value.length - 1].weight;
-    } else if (selectedExercise.value.defaultWeight !== undefined) {
-      newWeight = selectedExercise.value.defaultWeight;
     }
   }
   sets.value.push({ reps: 10, weight: newWeight });
@@ -190,6 +219,7 @@ watch(() => props.modelValue, (newValue) => {
       selectedExercise.value = null;
       sets.value = [];
       lastWorkoutData.value = null; // Clear last workout data too
+      exerciseHistory.value = null;
     }
   }
   else {
@@ -197,6 +227,7 @@ watch(() => props.modelValue, (newValue) => {
     setTimeout(() => {
       selectedExercise.value = null;
       sets.value = [];
+      exerciseHistory.value = null;
     }, 200);
   }
 });

@@ -43,6 +43,12 @@
 
     <WorkoutModal v-model="isModalOpen" :workout-to-edit="workoutToEdit" :date="selectedDate" @save="handleSave" />
 
+    <ConfirmationModal 
+      v-model="showConfirmationModal"
+      title="Удалить тренировку?"
+      message="Вы уверены, что хотите удалить эту тренировку? Это действие нельзя будет отменить."
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
@@ -52,6 +58,7 @@ import { useAuthStore } from '~/stores/auth';
 import WorkoutCard from '~/components/WorkoutCard.vue';
 import WorkoutModal from '~/components/WorkoutModal.vue';
 import WeekDaySelector from '~/components/WeekDaySelector.vue';
+import ConfirmationModal from '~/components/ConfirmationModal.vue';
 
 const authStore = useAuthStore();
 
@@ -138,6 +145,8 @@ const datesWithWorkoutsInWeek = computed(() => {
 
 const isModalOpen = ref(false);
 const workoutToEdit = ref(null);
+const showConfirmationModal = ref(false);
+const workoutToDelete = ref(null);
 
 // Initial data load
 refreshWorkouts();
@@ -177,10 +186,13 @@ const handleSave = () => {
   refreshMonthWorkoutsEnd(); // Refresh workouts for the month to update marked dates
 };
 
-const handleDelete = async (workoutId) => {
-  if (!confirm('Вы уверены, что хотите удалить эту тренировку?')) return;
+const handleDelete = (workoutId) => {
+  workoutToDelete.value = workoutId;
+  showConfirmationModal.value = true;
+};
 
-  await useAuthFetch(`/api/workouts/${workoutId}?date=${selectedDate.value}`,
+const confirmDelete = async () => {
+  await useAuthFetch(`/api/workouts/${workoutToDelete.value}?date=${selectedDate.value}`,
     {
       method: 'DELETE',
     }
@@ -188,6 +200,7 @@ const handleDelete = async (workoutId) => {
   refreshWorkouts();
   refreshMonthWorkoutsStart();
   refreshMonthWorkoutsEnd();
+  workoutToDelete.value = null;
 };
 
 </script>

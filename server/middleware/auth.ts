@@ -5,7 +5,7 @@ import { Buffer } from 'buffer';
 const publicRoutes = ['/api/auth/login', '/api/auth/register', '/api/exercises'];
 
 export default defineEventHandler(async (event) => {
-  if (!event.path.startsWith('/api/') || publicRoutes.some(route => event.path.startsWith(route))) {
+  if (!event.path.startsWith('/api/') || publicRoutes.includes(event.path)) {
     return;
   }
 
