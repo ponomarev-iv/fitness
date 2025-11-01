@@ -72,16 +72,16 @@ const handleLogout = () => {
 
 const handleSaveProfile = async () => {
   try {
-    const response = await useAuthFetch('/api/auth/profile', {
+    const { data: responseData, error: responseError } = await useAuthFetch('/api/auth/profile', {
       method: 'PUT',
       body: { name: name.value },
     });
 
-    if (response.error.value) {
-      throw new Error(response.error.value.data.message || 'Ошибка при сохранении профиля');
+    if (responseError.value) {
+      throw new Error(responseError.value.data.message || 'Ошибка при сохранении профиля');
     }
 
-    authStore.user.name = name.value;
+    authStore.updateUser(responseData.value.user);
     alert('Профиль успешно обновлен!');
   } catch (error) {
     alert(error.message);

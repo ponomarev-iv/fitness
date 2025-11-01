@@ -61,6 +61,23 @@ const currentYear = ref(today.getFullYear());
 const currentMonth = ref((today.getMonth() + 1).toString().padStart(2, '0'));
 const selectedDate = ref(`${currentYear.value}-${currentMonth.value}-${today.getDate().toString().padStart(2, '0')}`);
 
+const startOfWeek = computed(() => {
+  const date = new Date(selectedDate.value);
+  date.setDate(date.getDate() - (date.getDay() === 0 ? 6 : date.getDay() - 1)); // Go to Monday
+  date.setHours(0, 0, 0, 0);
+  return date;
+});
+
+const endOfWeek = computed(() => {
+  const date = new Date(startOfWeek.value);
+  date.setDate(date.getDate() + 6);
+  date.setHours(23, 59, 59, 999);
+  return date;
+});
+
+const monthOfStartOfWeek = computed(() => `${startOfWeek.value.getFullYear()}-${(startOfWeek.value.getMonth() + 1).toString().padStart(2, '0')}`);
+const monthOfEndOfWeek = computed(() => `${endOfWeek.value.getFullYear()}-${(endOfWeek.value.getMonth() + 1).toString().padStart(2, '0')}`);
+
 const formattedDate = computed(() => {
   const date = new Date(selectedDate.value)
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -76,24 +93,36 @@ const { data: workouts, pending: pendingWorkouts, error: workoutsError, refresh:
 });
 
 // Fetch all workouts for the current month to mark dates in the calendar
-const { data: monthWorkouts, pending: pendingMonthWorkouts, error: monthWorkoutsError, refresh: refreshMonthWorkouts } = useLazyFetch(() => `/api/workouts?month=${currentYear.value}-${currentMonth.value}`, {
+const { data: monthWorkoutsStart, pending: pendingMonthWorkoutsStart, refresh: refreshMonthWorkoutsStart } = useLazyFetch(() => `/api/workouts?month=${monthOfStartOfWeek.value}`, {
   immediate: false,
   headers: {
     Authorization: `Bearer ${authStore.token}`,
   },
 });
 
+const { data: monthWorkoutsEnd, pending: pendingMonthWorkoutsEnd, refresh: refreshMonthWorkoutsEnd } = useLazyFetch(() => `/api/workouts?month=${monthOfEndOfWeek.value}`, {
+  immediate: false,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+  },
+});
+
+const monthWorkouts = computed(() => {
+  const workouts = [];
+  if (monthWorkoutsStart.value) workouts.push(...monthWorkoutsStart.value);
+  if (monthWorkoutsEnd.value && monthOfStartOfWeek.value !== monthOfEndOfWeek.value) workouts.push(...monthWorkoutsEnd.value);
+  return workouts;
+});
+
+const pendingMonthWorkouts = computed(() => pendingMonthWorkoutsStart.value || pendingMonthWorkoutsEnd.value);
+
 const datesWithWorkoutsInWeek = computed(() => {
   if (!monthWorkouts.value) return [];
 
-  const currentWeekStart = new Date(selectedDate.value);
-  currentWeekStart.setDate(currentWeekStart.getDate() - (currentWeekStart.getDay() === 0 ? 6 : currentWeekStart.getDay() - 1)); // Go to Monday
-  currentWeekStart.setHours(0, 0, 0, 0);
-
   const weekDates = [];
   for (let i = 0; i < 7; i++) {
-    const d = new Date(currentWeekStart);
-    d.setDate(currentWeekStart.getDate() + i);
+    const d = new Date(startOfWeek.value);
+    d.setDate(startOfWeek.value.getDate() + i);
     weekDates.push(`${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`);
   }
 
@@ -109,22 +138,24 @@ const workoutToEdit = ref(null);
 
 // Initial data load
 refreshWorkouts();
-refreshMonthWorkouts();
+refreshMonthWorkoutsStart();
+refreshMonthWorkoutsEnd();
 
 // Watch for selectedDate changes to refresh workouts for that date and the month
 watch(selectedDate, (newDate) => {
   if (newDate) {
     refreshWorkouts();
-    // Update currentMonth and currentYear based on newDate for monthWorkouts fetch
-    const d = new Date(newDate);
-    currentYear.value = d.getFullYear();
-    currentMonth.value = (d.getMonth() + 1).toString().padStart(2, '0');
+    // The monthOfStartOfWeek and monthOfEndOfWeek computed properties will react to selectedDate changes
+    // No need to manually update currentYear and currentMonth here
   }
 });
 
-// Watch for month/year changes to refresh month workouts
-watch([currentYear, currentMonth], () => {
-  refreshMonthWorkouts();
+// Watch for monthOfStartOfWeek or monthOfEndOfWeek changes to refresh month workouts
+watch([monthOfStartOfWeek, monthOfEndOfWeek], () => {
+  refreshMonthWorkoutsStart();
+  if (monthOfStartOfWeek.value !== monthOfEndOfWeek.value) {
+    refreshMonthWorkoutsEnd();
+  }
 });
 
 const openAddModal = () => {
@@ -139,7 +170,8 @@ const openEditModal = (workout) => {
 
 const handleSave = () => {
   refreshWorkouts(); // Refresh workouts for the selected date
-  refreshMonthWorkouts(); // Refresh workouts for the month to update marked dates
+  refreshMonthWorkoutsStart(); // Refresh workouts for the month to update marked dates
+  refreshMonthWorkoutsEnd(); // Refresh workouts for the month to update marked dates
 };
 
 const handleDelete = async (workoutId) => {
@@ -151,7 +183,8 @@ const handleDelete = async (workoutId) => {
     }
   );
   refreshWorkouts();
-  refreshMonthWorkouts();
+  refreshMonthWorkoutsStart();
+  refreshMonthWorkoutsEnd();
 };
 
 </script>

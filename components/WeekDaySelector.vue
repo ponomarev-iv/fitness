@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between items-center bg-card p-2 py-4 rounded-lg overflow-y-auto" ref="weekDaysContainer">
+  <div class="flex items-center bg-card p-2 py-4 rounded-lg overflow-x-auto" ref="weekDaysContainer">
     <button
       v-for="day in weekDays"
       :key="day.dateString"
@@ -47,7 +47,7 @@ const weekDays = computed(() => {
   startOfWeek.setDate(startOfWeek.getDate() - (startOfWeek.getDay() === 0 ? 6 : startOfWeek.getDay() - 1)); // Go to Monday
 
   const days = [];
-  for (let i = 0; i < 5; i++) { // Change 7 to 5
+  for (let i = 0; i < 7; i++) {
     const currentDay = new Date(startOfWeek);
     currentDay.setDate(startOfWeek.getDate() + i);
 
